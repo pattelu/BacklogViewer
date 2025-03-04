@@ -1,15 +1,17 @@
 from ui.ui_backlog import Ui_Backlog
-from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QLabel
+from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QLabel, QPushButton
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import QByteArray, Qt
 import sqlite3
+from add_game import AddGame
 
 
 class Backlog(QWidget, Ui_Backlog):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.setWindowTitle("Backlog")
+
+        self.add_game.clicked.connect(self.button_add_game)
 
         # Create database
         self.create_database("backlog.db")
@@ -118,3 +120,7 @@ class Backlog(QWidget, Ui_Backlog):
         except Exception as e:
             print(f"Error with loading image from BLBO: {e}")
             return None
+
+    def button_add_game(self):
+        self.add_game = AddGame()
+        self.add_game.exec()

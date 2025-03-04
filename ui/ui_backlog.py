@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Backlog.ui'
+## Form generated from reading UI file 'backlog.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.8.1
 ##
@@ -34,6 +34,7 @@ class Ui_Backlog(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.table_game = QTableWidget(Backlog)
         self.table_game.setObjectName(u"table_game")
+        self.table_game.setSortingEnabled(True)
 
         self.horizontalLayout_2.addWidget(self.table_game)
 
@@ -48,10 +49,10 @@ class Ui_Backlog(object):
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout = QVBoxLayout(self.frame)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.add_new_game = QPushButton(self.frame)
-        self.add_new_game.setObjectName(u"add_new_game")
+        self.add_game = QPushButton(self.frame)
+        self.add_game.setObjectName(u"add_game")
 
-        self.verticalLayout.addWidget(self.add_new_game)
+        self.verticalLayout.addWidget(self.add_game)
 
         self.pushButton = QPushButton(self.frame)
         self.pushButton.setObjectName(u"pushButton")
@@ -77,8 +78,8 @@ class Ui_Backlog(object):
     # setupUi
 
     def retranslateUi(self, Backlog):
-        Backlog.setWindowTitle(QCoreApplication.translate("Backlog", u"Form", None))
-        self.add_new_game.setText(QCoreApplication.translate("Backlog", u"Add", None))
+        Backlog.setWindowTitle(QCoreApplication.translate("Backlog", u"Backlog", None))
+        self.add_game.setText(QCoreApplication.translate("Backlog", u"Add", None))
         self.pushButton.setText(QCoreApplication.translate("Backlog", u"Edit", None))
         self.pushButton_3.setText(QCoreApplication.translate("Backlog", u"Remove", None))
     # retranslateUi
