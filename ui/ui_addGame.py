@@ -24,7 +24,7 @@ class Ui_AddGame(object):
     def setupUi(self, AddGame):
         if not AddGame.objectName():
             AddGame.setObjectName(u"AddGame")
-        AddGame.resize(682, 458)
+        AddGame.resize(545, 458)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -120,6 +120,11 @@ class Ui_AddGame(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.line_cover = QLineEdit(self.frame)
         self.line_cover.setObjectName(u"line_cover")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.line_cover.sizePolicy().hasHeightForWidth())
+        self.line_cover.setSizePolicy(sizePolicy2)
         self.line_cover.setMaximumSize(QSize(16777215, 24))
         self.line_cover.setInputMethodHints(Qt.InputMethodHint.ImhNone)
 
@@ -127,7 +132,7 @@ class Ui_AddGame(object):
 
         self.toolbutton_cover = QToolButton(self.frame)
         self.toolbutton_cover.setObjectName(u"toolbutton_cover")
-        self.toolbutton_cover.setMaximumSize(QSize(24, 24))
+        self.toolbutton_cover.setMaximumSize(QSize(70, 24))
 
         self.horizontalLayout.addWidget(self.toolbutton_cover)
 
@@ -200,6 +205,7 @@ class Ui_AddGame(object):
         self.combo_status.addItem("")
         self.combo_status.addItem("")
         self.combo_status.setObjectName(u"combo_status")
+        self.combo_status.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
 
         self.gridLayout.addWidget(self.combo_status, 7, 1, 1, 1)
 
@@ -209,7 +215,13 @@ class Ui_AddGame(object):
         self.gridLayout.addWidget(self.line_genre, 5, 1, 1, 1)
 
         QWidget.setTabOrder(self.line_cover, self.toolbutton_cover)
-        QWidget.setTabOrder(self.toolbutton_cover, self.text_notes)
+        QWidget.setTabOrder(self.toolbutton_cover, self.line_title)
+        QWidget.setTabOrder(self.line_title, self.line_series)
+        QWidget.setTabOrder(self.line_series, self.line_series_no)
+        QWidget.setTabOrder(self.line_series_no, self.line_platforms)
+        QWidget.setTabOrder(self.line_platforms, self.line_genre)
+        QWidget.setTabOrder(self.line_genre, self.combo_status)
+        QWidget.setTabOrder(self.combo_status, self.text_notes)
         QWidget.setTabOrder(self.text_notes, self.checkbox_owned)
         QWidget.setTabOrder(self.checkbox_owned, self.button_add)
         QWidget.setTabOrder(self.button_add, self.button_cancel)
@@ -227,11 +239,12 @@ class Ui_AddGame(object):
         self.label_cover.setText(QCoreApplication.translate("AddGame", u"Cover", None))
         self.label_series_no.setText(QCoreApplication.translate("AddGame", u"Series No.", None))
         self.label_status.setText(QCoreApplication.translate("AddGame", u"Status", None))
+        self.text_notes.setPlainText("")
         self.label_genre.setText(QCoreApplication.translate("AddGame", u"Genre", None))
         self.label_platforms.setText(QCoreApplication.translate("AddGame", u"Platforms", None))
         self.label_series.setText(QCoreApplication.translate("AddGame", u"Series", None))
         self.line_cover.setPlaceholderText(QCoreApplication.translate("AddGame", u"Select game cover", None))
-        self.toolbutton_cover.setText(QCoreApplication.translate("AddGame", u"...", None))
+        self.toolbutton_cover.setText(QCoreApplication.translate("AddGame", u"Image", None))
         self.label_title.setText(QCoreApplication.translate("AddGame", u"Title", None))
         self.button_add.setText(QCoreApplication.translate("AddGame", u"Add", None))
         self.button_cancel.setText(QCoreApplication.translate("AddGame", u"Cancel", None))

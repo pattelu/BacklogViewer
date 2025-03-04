@@ -1,9 +1,19 @@
 from ui.ui_backlog import Ui_Backlog
-from PySide6.QtWidgets import QWidget, QTableWidget, QTableWidgetItem, QLabel, QPushButton
+from PySide6.QtWidgets import (
+    QWidget,
+    QTableWidget,
+    QTableWidgetItem,
+    QLabel,
+    QPushButton,
+)
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import QByteArray, Qt
 import sqlite3
 from add_game import AddGame
+
+# TDL
+# Refresf database affter edition (add, remove, edit)
+# Editing directly in table (?)
 
 
 class Backlog(QWidget, Ui_Backlog):
