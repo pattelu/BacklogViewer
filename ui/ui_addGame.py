@@ -163,6 +163,7 @@ class Ui_AddGame(object):
         self.button_add.setObjectName(u"button_add")
         self.button_add.setMaximumSize(QSize(100, 16777215))
         self.button_add.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.button_add.setCheckable(True)
 
         self.horizontalLayout_2.addWidget(self.button_add)
 

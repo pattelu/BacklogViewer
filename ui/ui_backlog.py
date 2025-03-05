@@ -49,10 +49,11 @@ class Ui_Backlog(object):
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout = QVBoxLayout(self.frame)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.add_game = QPushButton(self.frame)
-        self.add_game.setObjectName(u"add_game")
+        self.button_add_game = QPushButton(self.frame)
+        self.button_add_game.setObjectName(u"button_add_game")
+        self.button_add_game.setCheckable(False)
 
-        self.verticalLayout.addWidget(self.add_game)
+        self.verticalLayout.addWidget(self.button_add_game)
 
         self.pushButton = QPushButton(self.frame)
         self.pushButton.setObjectName(u"pushButton")
@@ -63,6 +64,11 @@ class Ui_Backlog(object):
         self.pushButton_3.setObjectName(u"pushButton_3")
 
         self.verticalLayout.addWidget(self.pushButton_3)
+
+        self.button_refresh = QPushButton(self.frame)
+        self.button_refresh.setObjectName(u"button_refresh")
+
+        self.verticalLayout.addWidget(self.button_refresh)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -79,8 +85,9 @@ class Ui_Backlog(object):
 
     def retranslateUi(self, Backlog):
         Backlog.setWindowTitle(QCoreApplication.translate("Backlog", u"Backlog", None))
-        self.add_game.setText(QCoreApplication.translate("Backlog", u"Add", None))
+        self.button_add_game.setText(QCoreApplication.translate("Backlog", u"Add", None))
         self.pushButton.setText(QCoreApplication.translate("Backlog", u"Edit", None))
         self.pushButton_3.setText(QCoreApplication.translate("Backlog", u"Remove", None))
+        self.button_refresh.setText(QCoreApplication.translate("Backlog", u"Refresh", None))
     # retranslateUi
 

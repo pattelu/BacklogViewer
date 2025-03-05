@@ -8,14 +8,11 @@ from PySide6.QtWidgets import (
     QMessageBox,
 )
 from PySide6.QtGui import QIntValidator
-
-# TDL
-# Info that game was added to database
-# TBD: Clear data or close dialog after added game
+import backlog_widget
 
 
 class AddGame(QDialog, Ui_AddGame):
-    def __init__(self):
+    def __init__(self, parent=backlog_widget):
         super().__init__()
         self.setupUi(self)
 
@@ -44,13 +41,13 @@ class AddGame(QDialog, Ui_AddGame):
 
     def add_game(self):
         if self.mandatory_fields():
-            id_game = self.add_to_database("backlog.db")
-            print(f"Successfully added game with id: {id_game}!")
+            self.add_to_database("backlog.db")
+            self.close()
         else:
             dlg = QMessageBox(self)
             dlg.setWindowTitle("Fields required!")
             dlg.setText("Title is a mandatory field!")
-            dlg.exec_()
+            dlg.exec()
 
     def add_to_database(self, db_name):
         blob_cover = self.convert_to_blob(self.line_cover.text())
@@ -82,7 +79,6 @@ class AddGame(QDialog, Ui_AddGame):
                 cursor = conn.cursor()
                 cursor.execute(sql, game_data)
                 conn.commit()
-                return cursor.lastrowid
         except sqlite3.OperationalError as e:
             print("Failed with error:", e)
 

@@ -5,15 +5,18 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QLabel,
     QPushButton,
+    QDialog,
 )
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import QByteArray, Qt
 import sqlite3
-from add_game import AddGame
+from add_game_dialog import AddGame
 
 # TDL
-# Refresf database affter edition (add, remove, edit)
-# Editing directly in table (?)
+# Editing record in database
+# Removing record from database
+# Choose which columns should be displayed
+# Info that game was added to database - bubble (QLabel, QWidget)
 
 
 class Backlog(QWidget, Ui_Backlog):
@@ -21,20 +24,19 @@ class Backlog(QWidget, Ui_Backlog):
         super().__init__()
         self.setupUi(self)
 
-        self.add_game.clicked.connect(self.button_add_game)
+        self.button_add_game.clicked.connect(self.add_game)
+        self.button_refresh.clicked.connect(self.refresh_database)
 
         # Create database
         self.create_database("backlog.db")
 
         # Check if table is empty
         if self.check_if_table_is_empty("backlog.db", "to_play"):
-            # Fetch data
-            rows = self.fetch_data("backlog.db", "to_play")
-            # Display data in table
-            to_play = self.display_to_play(rows)
-            to_play.show()
-        else:
-            sys.exit("No data to display")
+            # Load data if not empty
+            self.fetch_data("backlog.db", "to_play")
+
+    def refresh_database(self):
+        self.fetch_data("backlog.db", "to_play")
 
     def create_database(self, db_name):
         sql_statements = [
@@ -73,19 +75,20 @@ class Backlog(QWidget, Ui_Backlog):
     def fetch_data(self, db_name, table_name):
         try:
             with sqlite3.connect(db_name) as conn:
+                self.table_game.clearContents()
                 self.cursor = conn.cursor()
                 self.cursor.execute(f"SELECT * FROM {table_name}")
                 rows = self.cursor.fetchall()
-                return rows
+                self.display_table(rows).show()
         except sqlite3.OperationalError as e:
             print("Filed to open database:", e)
 
-    def display_to_play(self, rows):
+    def display_table(self, rows):
         self.table_game.setRowCount(len(rows))
-        self.table_game.setColumnCount(len(rows[0]))
+        self.table_game.setColumnCount(len(rows[0]) - 1)
 
         for row_idx, row in enumerate(rows):
-            for col_idx, value in enumerate(row):
+            for col_idx, value in enumerate(row[1:]):
                 if isinstance(value, bytes):
                     pixmap = self.get_image_data_from_blob(value)
                     if pixmap:
@@ -112,8 +115,8 @@ class Backlog(QWidget, Ui_Backlog):
             "Notes",
         ]
 
-        self.table_game.setHorizontalHeaderLabels(name)
-        self.table_game.verticalHeader().setVisible(False)
+        self.table_game.setHorizontalHeaderLabels(name[1:])
+        self.table_game.verticalHeader().setVisible(True)
         self.table_game.resizeRowsToContents()
         self.table_game.resizeColumnsToContents()
         return self.table_game
@@ -131,6 +134,8 @@ class Backlog(QWidget, Ui_Backlog):
             print(f"Error with loading image from BLBO: {e}")
             return None
 
-    def button_add_game(self):
-        self.add_game = AddGame()
-        self.add_game.exec()
+    def add_game(self):
+        add_game_dlg = AddGame()
+        add_game_dlg.exec()
+        if add_game_dlg.button_add.isChecked():
+            self.refresh_database()
