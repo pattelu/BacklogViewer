@@ -7,12 +7,11 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
 )
-from PySide6.QtGui import QIntValidator
-import backlog_widget
+#from PySide6.QtGui import QIntValidator
 
 
 class AddGame(QDialog, Ui_AddGame):
-    def __init__(self, parent=backlog_widget):
+    def __init__(self):
         super().__init__()
         self.setupUi(self)
 
@@ -22,9 +21,6 @@ class AddGame(QDialog, Ui_AddGame):
 
         # Add Cover button - Open File
         self.toolbutton_cover.clicked.connect(self.add_cover)
-
-        # Limit "Series No."" field only for digits
-        self.line_series_no.setValidator(QIntValidator())
 
     def add_cover(self):
         # Cover
@@ -53,24 +49,24 @@ class AddGame(QDialog, Ui_AddGame):
         blob_cover = self.convert_to_blob(self.line_cover.text())
 
         if self.checkbox_owned.isChecked():
-            owned = 1
+            owned = "Yes"
         else:
-            owned = 0
+            owned = "No"
 
         sql = f"""
-        INSERT INTO to_play (cover, title, series, series_no, platforms, genre, owned, status, notes)
+        INSERT INTO to_play (cover, title, developer, series, genre, platform, status, owned, notes)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
         """
 
         game_data = (
             blob_cover,
             self.line_title.text(),
+            self.line_developer.text(),
             self.line_series.text(),
-            self.line_series_no.text(),
-            self.line_platforms.text(),
             self.line_genre.text(),
-            owned,
+            self.line_platform.text(),
             self.combo_status.currentText(),
+            owned,
             self.text_notes.toPlainText(),
         )
 
@@ -88,7 +84,7 @@ class AddGame(QDialog, Ui_AddGame):
                 blob = file.read()
             return blob
         except Exception:
-            return "Wrong file!"
+            return "No Cover"
 
     def cancel_add_game(self):
         self.reject()
