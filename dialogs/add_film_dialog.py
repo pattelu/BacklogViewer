@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
 )
+from database import Database
 
 
 class AddFilm(QDialog, Ui_AddFilm):
@@ -36,47 +37,13 @@ class AddFilm(QDialog, Ui_AddFilm):
 
     def add_film(self):
         if self.mandatory_fields():
-            self.add_to_database("backlog.db")
+            Database.add_to_database(self, "backlog.db", "sql_film", "film_data")
             self.close()
         else:
             dlg = QMessageBox(self)
             dlg.setWindowTitle("Fields required!")
             dlg.setText("Title is a mandatory field!")
             dlg.exec()
-
-    def add_to_database(self, db_name):
-        blob_cover = self.convert_to_blob(self.line_cover.text())
-
-        sql = f"""
-        INSERT INTO to_watch (cover, title, series, genre, type, status, notes)
-        VALUES (?, ?, ?, ?, ?, ?, ?);
-        """
-
-        film_data = (
-            blob_cover,
-            self.line_title.text(),
-            self.line_series.text(),
-            self.line_genre.text(),
-            self.line_type.text(),
-            self.combo_status.currentText(),
-            self.text_notes.toPlainText(),
-        )
-
-        try:
-            with sqlite3.connect(db_name) as conn:
-                cursor = conn.cursor()
-                cursor.execute(sql, film_data)
-                conn.commit()
-        except sqlite3.OperationalError as e:
-            print("Failed with error:", e)
-
-    def convert_to_blob(self, filename):
-        try:
-            with open(filename, "rb") as file:
-                blob = file.read()
-            return blob
-        except Exception:
-            return "No Cover"
 
     def cancel_add_film(self):
         self.reject()
