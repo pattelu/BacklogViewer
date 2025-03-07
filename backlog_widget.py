@@ -6,19 +6,22 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QDialog,
-    QHeaderView
+    QHeaderView,
 )
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtCore import QByteArray, Qt
 from PySide6.QtSql import QSqlTableModel
 import sqlite3
 from add_game_dialog import AddGame
+from add_book_dialog import AddBook
+from add_film_dialog import AddFilm
 import functools
 
 # TDL
 # Editing record in database
 # Choose which columns should be displayed
 # Info that game was added /removed / edited in database - bubble (QLabel, QWidget)
+# Separete database logic in new file
 
 games_header = [
     "ID",
@@ -33,15 +36,33 @@ games_header = [
     "Notes",
 ]
 
+books_header = [
+    "ID",
+    "Cover",
+    "Title",
+    "Author",
+    "Series",
+    "Genre",
+    "Status",
+    "Notes",
+]
+
+films_header = [
+    "ID",
+    "Cover",
+    "Title",
+    "Series",
+    "Genre",
+    "Type",
+    "Status",
+    "Notes",
+]
+
 
 class Backlog(QWidget, Ui_Backlog):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-
-        self.button_add_game.clicked.connect(self.add_game)
-        self.button_refresh.clicked.connect(functools.partial(self.fetch_data, "backlog.db", "to_play", self.table_game))
-        self.button_remove.clicked.connect(functools.partial(self.remove_game, "backlog.db", "to_play", self.table_game))
 
         # Create database
         self.create_database("backlog.db")
@@ -49,23 +70,89 @@ class Backlog(QWidget, Ui_Backlog):
         # Check if table is empty
         if self.check_if_table_is_empty("backlog.db", "to_play"):
             # Load data if not empty
-            self.fetch_data("backlog.db", "to_play", self.table_game)
+            self.fetch_data("backlog.db", "to_play", self.table_game, games_header)
+        if self.check_if_table_is_empty("backlog.db", "to_read"):
+            # Load data if not empty
+            self.fetch_data("backlog.db", "to_read", self.table_book, books_header)
+        if self.check_if_table_is_empty("backlog.db", "to_watch"):
+            # Load data if not empty
+            self.fetch_data("backlog.db", "to_watch", self.table_film, films_header)
 
+        # To Play tab
+        self.button_add_game.clicked.connect(self.add_game)
+        self.button_refresh_game.clicked.connect(
+            functools.partial(
+                self.fetch_data, "backlog.db", "to_play", self.table_game, games_header
+                )
+        )
+        self.button_remove_game.clicked.connect(
+            functools.partial(
+                self.remove_from_db, "backlog.db", "to_play", self.table_game, games_header
+            )
+        )
+
+        # To Read tab
+        self.button_add_book.clicked.connect(self.add_book)
+        self.button_refresh_book.clicked.connect(
+            functools.partial(
+                self.fetch_data, "backlog.db", "to_read", self.table_book, books_header
+                )
+        )
+        self.button_remove_book.clicked.connect(
+            functools.partial(
+                self.remove_from_db, "backlog.db", "to_read", self.table_book, books_header
+            )
+        )
+
+        # To Watch tab
+        self.button_add_film.clicked.connect(self.add_film)
+        self.button_refresh_film.clicked.connect(
+            functools.partial(
+                self.fetch_data, "backlog.db", "to_watch", self.table_film, films_header
+            )
+        )
+        self.button_remove_film.clicked.connect(
+            functools.partial(
+                self.remove_from_db, "backlog.db", "to_watch", self.table_film, films_header
+            )
+        )
 
     def create_database(self, db_name):
         sql_statements = [
             """CREATE TABLE IF NOT EXISTS "to_play" (
-            "id"	INTEGER,
-            "cover"	BLOB,
-            "title"	TEXT NOT NULL,
-            "developer" TEXT,
-            "series"	TEXT,
-            "genre"	TEXT,
-            "platform"	TEXT,
-            "status"	TEXT,
-            "owned"	TEXT NOT NULL,
-            "notes"	TEXT,
-            PRIMARY KEY("id" AUTOINCREMENT)
+                "id"	INTEGER,
+                "cover"	BLOB,
+                "title"	TEXT NOT NULL,
+                "developer" TEXT,
+                "series"	TEXT,
+                "genre"	TEXT,
+                "platform"	TEXT,
+                "status"	TEXT,
+                "owned"	TEXT NOT NULL,
+                "notes"	TEXT,
+                PRIMARY KEY("id" AUTOINCREMENT)
+            );""",
+            """CREATE TABLE IF NOT EXISTS "to_read" (
+                "id"	INTEGER,
+                "cover"	BLOB,
+                "title"	TEXT NOT NULL,
+                "author"	TEXT NOT NULL,
+                "series"	TEXT,
+                "genre"	TEXT,
+                "status"	TEXT,
+                "notes"	TEXT,
+                PRIMARY KEY("id" AUTOINCREMENT)
+            );""",
+            """CREATE TABLE IF NOT EXISTS "to_watch" (
+                "id"	INTEGER,
+                "cover"	BLOB,
+                "title"	TEXT NOT NULL,
+                "series"	TEXT,
+                "genre"	TEXT,
+                "type" TEXT,
+                "status"	TEXT,
+                "notes"	TEXT,
+                PRIMARY KEY("id" AUTOINCREMENT)
             );""",
         ]
         try:
@@ -86,13 +173,13 @@ class Backlog(QWidget, Ui_Backlog):
         except sqlite3.OperationalError as e:
             print("Failed with error:", e)
 
-    def fetch_data(self, db_name, db_table_name, table_widget_name):
+    def fetch_data(self, db_name, db_table_name, table_widget_name, header):
         try:
             with sqlite3.connect(db_name) as conn:
                 self.cursor = conn.cursor()
                 self.cursor.execute(f"SELECT * FROM {db_table_name}")
                 self.display_table(
-                    self.cursor.fetchall(), table_widget_name, games_header
+                    self.cursor.fetchall(), table_widget_name, header
                 ).show()
         except sqlite3.OperationalError as e:
             print("Filed to open database:", e)
@@ -119,8 +206,10 @@ class Backlog(QWidget, Ui_Backlog):
         table_widget_name.setHorizontalHeaderLabels(list_name)
         table_widget_name.resizeRowsToContents()
         table_widget_name.resizeColumnsToContents()
-        table_widget_name.horizontalHeader().setSectionResizeMode(table_widget_name.columnCount() -1, QHeaderView.Stretch)
-        #table_widget_name.horizontalHeader().stretchLastSection()
+        table_widget_name.horizontalHeader().setSectionResizeMode(
+            table_widget_name.columnCount() - 1, QHeaderView.Stretch
+        )
+        # table_widget_name.horizontalHeader().stretchLastSection()
         return table_widget_name
 
     # Change BLOB to image
@@ -140,16 +229,16 @@ class Backlog(QWidget, Ui_Backlog):
         add_game_dlg = AddGame()
         add_game_dlg.exec()
         if add_game_dlg.button_add.isChecked():
-            self.fetch_data("backlog.db", "to_play", self.table_game)
+            self.fetch_data("backlog.db", "to_play", self.table_game, games_header)
 
-    def remove_game(self, db_name, db_table_name, table_widget_name):
+    def remove_from_db(self, db_name, db_table_name, table_widget_name, header):
         sql_remove = f"""
         DELETE FROM {db_table_name} WHERE id = ?
         """
 
         selected_row = table_widget_name.currentRow()
         if selected_row == -1:
-            return # Row is not selected
+            return  # Row is not selected
         else:
             record_id = str(table_widget_name.item(selected_row, 0).text())
             try:
@@ -160,6 +249,18 @@ class Backlog(QWidget, Ui_Backlog):
             except sqlite3.OperationalError as e:
                 print("Failed to create tables:", e)
 
-            self.fetch_data(db_name, db_table_name, table_widget_name)
-        
+            self.fetch_data(db_name, db_table_name, table_widget_name, header)
 
+    def add_book(self):
+        add_book_dlg = AddBook()
+        add_book_dlg.exec()
+        if add_book_dlg.button_add.isChecked():
+            self.fetch_data("backlog.db", "to_read", self.table_book, books_header)
+
+    def add_film(self):
+        add_film_dlg = AddFilm()
+        add_film_dlg.exec()
+        a = add_film_dlg.result()
+        print(a)
+        if add_film_dlg.button_add.isChecked():
+            self.fetch_data("backlog.db", "to_watch", self.table_film, films_header)

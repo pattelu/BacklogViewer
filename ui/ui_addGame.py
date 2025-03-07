@@ -24,7 +24,7 @@ class Ui_AddGame(object):
     def setupUi(self, AddGame):
         if not AddGame.objectName():
             AddGame.setObjectName(u"AddGame")
-        AddGame.resize(545, 458)
+        AddGame.resize(534, 438)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)

@@ -74,15 +74,15 @@ class Ui_Backlog(object):
 
         self.verticalLayout.addWidget(self.pushButton)
 
-        self.button_remove = QPushButton(self.frame)
-        self.button_remove.setObjectName(u"button_remove")
+        self.button_remove_game = QPushButton(self.frame)
+        self.button_remove_game.setObjectName(u"button_remove_game")
 
-        self.verticalLayout.addWidget(self.button_remove)
+        self.verticalLayout.addWidget(self.button_remove_game)
 
-        self.button_refresh = QPushButton(self.frame)
-        self.button_refresh.setObjectName(u"button_refresh")
+        self.button_refresh_game = QPushButton(self.frame)
+        self.button_refresh_game.setObjectName(u"button_refresh_game")
 
-        self.verticalLayout.addWidget(self.button_refresh)
+        self.verticalLayout.addWidget(self.button_refresh_game)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -92,12 +92,114 @@ class Ui_Backlog(object):
         self.horizontalLayout.addWidget(self.frame)
 
         self.tabWidget.addTab(self.tab_game, "")
-        self.tab_watcb = QWidget()
-        self.tab_watcb.setObjectName(u"tab_watcb")
-        self.tabWidget.addTab(self.tab_watcb, "")
         self.tab_read = QWidget()
         self.tab_read.setObjectName(u"tab_read")
+        self.horizontalLayout_4 = QHBoxLayout(self.tab_read)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.table_book = QTableWidget(self.tab_read)
+        self.table_book.setObjectName(u"table_book")
+        self.table_book.setDragEnabled(False)
+        self.table_book.setAlternatingRowColors(True)
+        self.table_book.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table_book.setGridStyle(Qt.PenStyle.SolidLine)
+        self.table_book.setSortingEnabled(True)
+        self.table_book.horizontalHeader().setMinimumSectionSize(1)
+        self.table_book.horizontalHeader().setDefaultSectionSize(100)
+        self.table_book.horizontalHeader().setStretchLastSection(True)
+
+        self.horizontalLayout_4.addWidget(self.table_book)
+
+        self.frame_2 = QFrame(self.tab_read)
+        self.frame_2.setObjectName(u"frame_2")
+        sizePolicy1.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
+        self.frame_2.setSizePolicy(sizePolicy1)
+        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_2 = QVBoxLayout(self.frame_2)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.button_add_book = QPushButton(self.frame_2)
+        self.button_add_book.setObjectName(u"button_add_book")
+        self.button_add_book.setCheckable(False)
+
+        self.verticalLayout_2.addWidget(self.button_add_book)
+
+        self.pushButton_2 = QPushButton(self.frame_2)
+        self.pushButton_2.setObjectName(u"pushButton_2")
+
+        self.verticalLayout_2.addWidget(self.pushButton_2)
+
+        self.button_remove_book = QPushButton(self.frame_2)
+        self.button_remove_book.setObjectName(u"button_remove_book")
+
+        self.verticalLayout_2.addWidget(self.button_remove_book)
+
+        self.button_refresh_book = QPushButton(self.frame_2)
+        self.button_refresh_book.setObjectName(u"button_refresh_book")
+
+        self.verticalLayout_2.addWidget(self.button_refresh_book)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_2.addItem(self.verticalSpacer_2)
+
+
+        self.horizontalLayout_4.addWidget(self.frame_2)
+
         self.tabWidget.addTab(self.tab_read, "")
+        self.tab_watch = QWidget()
+        self.tab_watch.setObjectName(u"tab_watch")
+        self.horizontalLayout_5 = QHBoxLayout(self.tab_watch)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.table_film = QTableWidget(self.tab_watch)
+        self.table_film.setObjectName(u"table_film")
+        self.table_film.setDragEnabled(False)
+        self.table_film.setAlternatingRowColors(True)
+        self.table_film.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table_film.setGridStyle(Qt.PenStyle.SolidLine)
+        self.table_film.setSortingEnabled(True)
+        self.table_film.horizontalHeader().setMinimumSectionSize(1)
+        self.table_film.horizontalHeader().setDefaultSectionSize(100)
+        self.table_film.horizontalHeader().setStretchLastSection(True)
+
+        self.horizontalLayout_5.addWidget(self.table_film)
+
+        self.frame_3 = QFrame(self.tab_watch)
+        self.frame_3.setObjectName(u"frame_3")
+        sizePolicy1.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
+        self.frame_3.setSizePolicy(sizePolicy1)
+        self.frame_3.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_3 = QVBoxLayout(self.frame_3)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.button_add_film = QPushButton(self.frame_3)
+        self.button_add_film.setObjectName(u"button_add_film")
+        self.button_add_film.setCheckable(False)
+
+        self.verticalLayout_3.addWidget(self.button_add_film)
+
+        self.pushButton_3 = QPushButton(self.frame_3)
+        self.pushButton_3.setObjectName(u"pushButton_3")
+
+        self.verticalLayout_3.addWidget(self.pushButton_3)
+
+        self.button_remove_film = QPushButton(self.frame_3)
+        self.button_remove_film.setObjectName(u"button_remove_film")
+
+        self.verticalLayout_3.addWidget(self.button_remove_film)
+
+        self.button_refresh_film = QPushButton(self.frame_3)
+        self.button_refresh_film.setObjectName(u"button_refresh_film")
+
+        self.verticalLayout_3.addWidget(self.button_refresh_film)
+
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_3.addItem(self.verticalSpacer_3)
+
+
+        self.horizontalLayout_5.addWidget(self.frame_3)
+
+        self.tabWidget.addTab(self.tab_watch, "")
 
         self.horizontalLayout_2.addWidget(self.tabWidget)
 
@@ -114,10 +216,18 @@ class Ui_Backlog(object):
         Backlog.setWindowTitle(QCoreApplication.translate("Backlog", u"Backlog", None))
         self.button_add_game.setText(QCoreApplication.translate("Backlog", u"Add", None))
         self.pushButton.setText(QCoreApplication.translate("Backlog", u"Edit", None))
-        self.button_remove.setText(QCoreApplication.translate("Backlog", u"Remove", None))
-        self.button_refresh.setText(QCoreApplication.translate("Backlog", u"Refresh", None))
+        self.button_remove_game.setText(QCoreApplication.translate("Backlog", u"Remove", None))
+        self.button_refresh_game.setText(QCoreApplication.translate("Backlog", u"Refresh", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_game), QCoreApplication.translate("Backlog", u"To Play", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_watcb), QCoreApplication.translate("Backlog", u"To Watch", None))
+        self.button_add_book.setText(QCoreApplication.translate("Backlog", u"Add", None))
+        self.pushButton_2.setText(QCoreApplication.translate("Backlog", u"Edit", None))
+        self.button_remove_book.setText(QCoreApplication.translate("Backlog", u"Remove", None))
+        self.button_refresh_book.setText(QCoreApplication.translate("Backlog", u"Refresh", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_read), QCoreApplication.translate("Backlog", u"To Read", None))
+        self.button_add_film.setText(QCoreApplication.translate("Backlog", u"Add", None))
+        self.pushButton_3.setText(QCoreApplication.translate("Backlog", u"Edit", None))
+        self.button_remove_film.setText(QCoreApplication.translate("Backlog", u"Remove", None))
+        self.button_refresh_film.setText(QCoreApplication.translate("Backlog", u"Refresh", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_watch), QCoreApplication.translate("Backlog", u"To Watch", None))
     # retranslateUi
 
