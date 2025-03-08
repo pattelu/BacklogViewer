@@ -22,6 +22,8 @@ import functools
 # Choose which columns should be displayed
 # Info that game was added /removed / edited in database - bubble (QLabel, QWidget)
 
+
+# Headers
 games_header = [
     "ID",
     "Cover",
@@ -56,6 +58,7 @@ films_header = [
     "Status",
     "Notes",
 ]
+# End of headers
 
 
 class Backlog(QWidget, Ui_Backlog):
@@ -64,31 +67,18 @@ class Backlog(QWidget, Ui_Backlog):
         self.setupUi(self)
 
         # Create database
-        Database.create_database(self, "backlog.db")
+        Database.create_database(Database, "backlog.db")
 
-        # Check if table is empty
-        if Database.check_if_table_is_empty(self, "backlog.db", "to_play"):
-            # Load data if not empty
-            Database.fetch_data(
-                self, "backlog.db", "to_play", self.table_game, games_header
-            )
-        if Database.check_if_table_is_empty(self, "backlog.db", "to_read"):
-            # Load data if not empty
-            Database.fetch_data(
-                self, "backlog.db", "to_read", self.table_book, books_header
-            )
-        if Database.check_if_table_is_empty(self, "backlog.db", "to_watch"):
-            # Load data if not empty
-            Database.fetch_data(
-                self, "backlog.db", "to_watch", self.table_film, films_header
-            )
+        # Refres data from table
+        self.refresh_data("backlog.db", "to_play", self.table_game, games_header)
+        self.refresh_data("backlog.db", "to_read", self.table_book, books_header)
+        self.refresh_data("backlog.db", "to_watch", self.table_film, films_header)
 
         # To Play tab
         self.button_add_game.clicked.connect(self.add_game)
         self.button_refresh_game.clicked.connect(
             functools.partial(
-                Database.fetch_data,
-                self,
+                self.refresh_data,
                 "backlog.db",
                 "to_play",
                 self.table_game,
@@ -98,7 +88,7 @@ class Backlog(QWidget, Ui_Backlog):
         self.button_remove_game.clicked.connect(
             functools.partial(
                 Database.remove_from_db,
-                self,
+                Database,
                 "backlog.db",
                 "to_play",
                 self.table_game,
@@ -110,8 +100,7 @@ class Backlog(QWidget, Ui_Backlog):
         self.button_add_book.clicked.connect(self.add_book)
         self.button_refresh_book.clicked.connect(
             functools.partial(
-                Database.fetch_data,
-                self,
+                self.refresh_data,
                 "backlog.db",
                 "to_read",
                 self.table_book,
@@ -121,7 +110,7 @@ class Backlog(QWidget, Ui_Backlog):
         self.button_remove_book.clicked.connect(
             functools.partial(
                 Database.remove_from_db,
-                self,
+                Database,
                 "backlog.db",
                 "to_read",
                 self.table_book,
@@ -133,8 +122,7 @@ class Backlog(QWidget, Ui_Backlog):
         self.button_add_film.clicked.connect(self.add_film)
         self.button_refresh_film.clicked.connect(
             functools.partial(
-                Database.fetch_data,
-                self,
+                self.refresh_data,
                 "backlog.db",
                 "to_watch",
                 self.table_film,
@@ -144,7 +132,7 @@ class Backlog(QWidget, Ui_Backlog):
         self.button_remove_film.clicked.connect(
             functools.partial(
                 Database.remove_from_db,
-                self,
+                Database,
                 "backlog.db",
                 "to_watch",
                 self.table_film,
@@ -152,26 +140,33 @@ class Backlog(QWidget, Ui_Backlog):
             )
         )
 
+    # Check if table is empty and display data if not
+    def refresh_data(self, db_name, db_table_name, table_widget_name, header):
+        if Database.check_if_table_is_empty(Database, db_name, db_table_name):
+            Database.display_table(
+                self,
+                Database.fetch_data(Database, db_name, db_table_name),
+                table_widget_name,
+                header,
+            )
+
+    # Open Add Game Dialog and refresh table
     def add_game(self):
         add_game_dlg = AddGame()
         add_game_dlg.exec()
         if add_game_dlg.button_add.isChecked():
-            Database.fetch_data(
-                self, "backlog.db", "to_play", self.table_game, games_header
-            )
+            self.refresh_data("backlog.db", "to_play", self.table_game, games_header)
 
+    # Open Add Book Dialog and refresh table
     def add_book(self):
         add_book_dlg = AddBook()
         add_book_dlg.exec()
         if add_book_dlg.button_add.isChecked():
-            Database.fetch_data(
-                self, "backlog.db", "to_read", self.table_book, books_header
-            )
+            self.refresh_data("backlog.db", "to_read", self.table_book, books_header)
 
+    # Open Add Film Dialog and refresh table
     def add_film(self):
         add_film_dlg = AddFilm()
         add_film_dlg.exec()
         if add_film_dlg.button_add.isChecked():
-            Database.fetch_data(
-                self, "backlog.db", "to_watch", self.table_film, films_header
-            )
+            self.refresh_data("backlog.db", "to_watch", self.table_film, films_header)

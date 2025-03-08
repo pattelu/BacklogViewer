@@ -12,11 +12,26 @@ class Database:
     def __init__(self):
         super().__init__()
 
-        self.db_name = db_name
         self.conn = None
         self.cursor = None
+        self.connect_db()
 
+    # Connect to database
+    def connect_db(self, db_name):
+        try:
+            self.conn = sqlite3.connect(db_name)
+            self.cursor = self.conn.cursor()
+        except sqlite3.Error as e:
+            print("Failed to connect db:", e)
+
+    # Close connection to database
+    def close_db(self):
+        if self.conn:
+            self.conn.close()
+
+    # Create database with tables: to_play, to_read, to_watch
     def create_database(self, db_name):
+        # SQL for creating tables in database
         sql_statements = [
             """CREATE TABLE IF NOT EXISTS "to_play" (
                 "id"	INTEGER,
@@ -54,25 +69,28 @@ class Database:
                 PRIMARY KEY("id" AUTOINCREMENT)
             );""",
         ]
-        try:
-            with sqlite3.connect(db_name) as conn:
-                self.cursor = conn.cursor()
-                for statement in sql_statements:
-                    self.cursor.execute(statement)
-                conn.commit()
-        except sqlite3.OperationalError as e:
-            print("Failed to create tables:", e)
 
-    def fetch_data(self, db_name, db_table_name, table_widget_name, header):
+        # Creating database
         try:
-            with sqlite3.connect(db_name) as conn:
-                self.cursor = conn.cursor()
-                self.cursor.execute(f"SELECT * FROM {db_table_name}")
-                Database.display_table(
-                    self, self.cursor.fetchall(), table_widget_name, header
-                ).show()
+            self.connect_db(self, db_name)
+            for statement in sql_statements:
+                self.cursor.execute(statement)
+                self.conn.commit()
+            self.close_db(self)
         except sqlite3.OperationalError as e:
             print("Filed to open database:", e)
+
+    # Fetch data from database
+    def fetch_data(self, db_name, db_table_name):
+        try:
+            self.connect_db(self, db_name)
+            self.cursor.execute(f"SELECT * FROM {db_table_name}")
+            rows = self.cursor.fetchall()
+            self.close_db(self)
+        except sqlite3.OperationalError as e:
+            print("Filed to open database:", e)
+
+        return rows
 
     def display_table(self, rows, table_widget_name, list_name):
         table_widget_name.setRowCount(len(rows))
@@ -104,22 +122,16 @@ class Database:
 
     def check_if_table_is_empty(self, db_name, db_table_name):
         try:
-            with sqlite3.connect(db_name) as conn:
-                self.cursor = conn.cursor()
-                self.cursor.execute(f"SELECT EXISTS (SELECT 1 FROM {db_table_name});")
-                return self.cursor.fetchall()[0][0]
+            self.connect_db(self, db_name)
+            self.cursor.execute(f"SELECT EXISTS (SELECT 1 FROM {db_table_name});")
+            result = self.cursor.fetchall()[0][0]
+            self.close_db(self)
         except sqlite3.OperationalError as e:
             print("Failed with error:", e)
 
-    def add_to_database(self, db_name, sql_name, sql_data, owned=False):
-        blob_cover = Database.convert_to_blob(self, self.line_cover.text())
+        return result
 
-        if owned:
-            if self.checkbox_owned.isChecked():
-                owned = "Yes"
-            else:
-                owned = "No"
-
+    def add_to_database(self, db_name, sql_name, sql_data):
         if sql_name == "sql_game":
             sql = f"""
             INSERT INTO to_play (cover, title, developer, series, genre, platform, status, owned, notes)
@@ -138,46 +150,11 @@ class Database:
         else:
             print("Wrong sql_name")
 
-        if sql_data == "game_data":
-            data = (
-                blob_cover,
-                self.line_title.text(),
-                self.line_developer.text(),
-                self.line_series.text(),
-                self.line_genre.text(),
-                self.line_platform.text(),
-                self.combo_status.currentText(),
-                owned,
-                self.text_notes.toPlainText(),
-            )
-        elif sql_data == "book_data":
-            data = (
-                blob_cover,
-                self.line_title.text(),
-                self.line_author.text(),
-                self.line_series.text(),
-                self.line_genre.text(),
-                self.combo_status.currentText(),
-                self.text_notes.toPlainText(),
-            )
-        elif sql_data == "film_data":
-            data = (
-                blob_cover,
-                self.line_title.text(),
-                self.line_series.text(),
-                self.line_genre.text(),
-                self.line_type.text(),
-                self.combo_status.currentText(),
-                self.text_notes.toPlainText(),
-            )
-        else:
-            print("Wrong sql_data")
-
         try:
-            with sqlite3.connect(db_name) as conn:
-                cursor = conn.cursor()
-                cursor.execute(sql, data)
-                conn.commit()
+            self.connect_db(self, db_name)
+            self.cursor.execute(sql, sql_data)
+            self.conn.commit()
+            self.close_db(self)
         except sqlite3.OperationalError as e:
             print("Failed with error:", e)
 
@@ -192,14 +169,19 @@ class Database:
         else:
             record_id = str(table_widget_name.item(selected_row, 0).text())
             try:
-                with sqlite3.connect(db_name) as conn:
-                    self.cursor = conn.cursor()
-                    self.cursor.execute(sql_remove, (record_id,))
-                    conn.commit()
+                self.connect_db(self, db_name)
+                self.cursor.execute(sql_remove, (record_id,))
+                self.conn.commit()
+                self.close_db(self)
             except sqlite3.OperationalError as e:
                 print("Failed to create tables:", e)
 
-            Database.fetch_data(self, db_name, db_table_name, table_widget_name, header)
+        self.display_table(
+            self,
+            self.fetch_data(self, db_name, db_table_name),
+            table_widget_name,
+            header,
+        )
 
     # Change Image to BLOB
     def convert_to_blob(self, filename):

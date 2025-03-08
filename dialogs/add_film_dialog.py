@@ -37,7 +37,18 @@ class AddFilm(QDialog, Ui_AddFilm):
 
     def add_film(self):
         if self.mandatory_fields():
-            Database.add_to_database(self, "backlog.db", "sql_film", "film_data")
+            blob_cover = Database.convert_to_blob(Database, self.line_cover.text())
+
+            data = (
+                blob_cover,
+                self.line_title.text(),
+                self.line_series.text(),
+                self.line_genre.text(),
+                self.line_type.text(),
+                self.combo_status.currentText(),
+                self.text_notes.toPlainText(),
+            )
+            Database.add_to_database(Database, "backlog.db", "sql_film", data)
             self.close()
         else:
             dlg = QMessageBox(self)

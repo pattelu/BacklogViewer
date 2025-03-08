@@ -7,10 +7,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMessageBox,
 )
-
 from database import Database
-
-# from PySide6.QtGui import QIntValidator
 
 
 class AddGame(QDialog, Ui_AddGame):
@@ -40,7 +37,26 @@ class AddGame(QDialog, Ui_AddGame):
 
     def add_game(self):
         if self.mandatory_fields():
-            Database.add_to_database(self, "backlog.db", "sql_game", "game_data", True)
+            blob_cover = Database.convert_to_blob(Database, self.line_cover.text())
+
+            if self.checkbox_owned.isChecked():
+                owned = "Yes"
+            else:
+                owned = "No"
+
+            data = (
+                blob_cover,
+                self.line_title.text(),
+                self.line_developer.text(),
+                self.line_series.text(),
+                self.line_genre.text(),
+                self.line_platform.text(),
+                self.combo_status.currentText(),
+                owned,
+                self.text_notes.toPlainText(),
+            )
+
+            Database.add_to_database(Database, "backlog.db", "sql_game", data)
             self.close()
         else:
             dlg = QMessageBox(self)
