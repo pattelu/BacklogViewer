@@ -158,6 +158,22 @@ class Database:
         except sqlite3.OperationalError as e:
             print("Failed with error:", e)
 
+    def update_value_in_table(
+        self, db_name, db_table_name, column_name, record_id, new_value
+    ):
+        sql = f"""
+        UPDATE {db_table_name}
+        SET {column_name} = ?
+        WHERE id = ?
+        """
+        try:
+            self.connect_db(self, db_name)
+            self.cursor.execute(sql, (new_value, record_id))
+            self.conn.commit()
+            self.close_db(self)
+        except sqlite3.OperationalError as e:
+            print("Failed with error:", e)
+
     def remove_from_db(self, db_name, db_table_name, table_widget_name, header):
         sql_remove = f"""
         DELETE FROM {db_table_name} WHERE id = ?
