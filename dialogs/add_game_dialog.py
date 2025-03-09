@@ -9,14 +9,25 @@ from PySide6.QtWidgets import (
 )
 from database import Database
 
+# from widgets.backlog_widget import Backlog
+
 
 class AddGame(QDialog, Ui_AddGame):
-    def __init__(self):
+    def __init__(self, button_name="Add", table_widget_name=None, column_name=None):
         super().__init__()
         self.setupUi(self)
 
-        # Add and Cancel buttons
-        self.button_add.clicked.connect(self.add_game)
+        self.table_widget_name = table_widget_name
+        self.column_name = column_name
+
+        if button_name != "Add":
+            self.button_add.setText(button_name)
+            self.button_add.clicked.connect(
+                self.edit_game(lambda: table_widget_name, column_name)
+            )
+        else:
+            self.button_add.clicked.connect(self.add_game)
+
         self.button_cancel.clicked.connect(self.cancel_add_game)
 
         # Add Cover button - Open File
@@ -59,6 +70,7 @@ class AddGame(QDialog, Ui_AddGame):
             Database.add_to_database(Database, "backlog.db", "sql_game", data)
             self.close()
         else:
+            self.button_add.setChecked(False)
             dlg = QMessageBox(self)
             dlg.setWindowTitle("Fields required!")
             dlg.setText("Title is a mandatory field!")

@@ -14,16 +14,19 @@ from PySide6.QtWidgets import (
     QHeaderView,
 )
 
+from PySide6.QtGui import QDragEnterEvent, QDropEvent
+from PySide6.QtCore import Qt, QMimeData
+
 import sys
 
 
-# TDL
-# Important
-#   Editing record in database (METHOD 1 and editing cover by drag and drop (?))
+# TDL:
+#   Editing record in database
+#       Editing cover by drag and drop image to cell
+#       Verifying if specific field have correct data
+#       Delete "Edit" button
 #   Info that record was added /removed / edited in database and that id is not allowed to changes, so changes was not saved - bubble (QLabel, QWidget)
-#   After remove, check if table is empty
-# Optional
-#   Choose which columns should be displayed
+#   After remove record, check if table is empty
 
 
 class Backlog(QWidget, Ui_Backlog):
@@ -112,6 +115,7 @@ class Backlog(QWidget, Ui_Backlog):
                 row, column, "backlog.db", "to_play", self.table_game, self.columns_game
             )
         )
+
         self.table_book.cellChanged.connect(
             lambda row, column: self.edit_cell(
                 row, column, "backlog.db", "to_read", self.table_book, self.columns_book
@@ -170,6 +174,7 @@ class Backlog(QWidget, Ui_Backlog):
     # Check if table is empty and display data if not
     def refresh_data(self, db_name, db_table_name, table_widget_name, header):
         if Database.check_if_table_is_empty(Database, db_name, db_table_name):
+            table_widget_name.clearContents()
             Database.display_table(
                 self,
                 Database.fetch_data(Database, db_name, db_table_name),
@@ -207,24 +212,21 @@ class Backlog(QWidget, Ui_Backlog):
     def edit_cell(
         self, row, column, db_name, db_table_name, table_widget_name, columns_name
     ):
-        # METHOD 1
-        # Select row
-        # Press Edit Button
-        # Open dialog to edit selected record
-        # Add new data in dialago
-        # Press button and update data
-
-        # METHOD 2 - DONE
-        # Edit value in cell
-        # Update value in database
 
         # If id is edited, stop edition
         if column == 0:
             # Add bubble alert that value has not been saved to database
             return
-        record_id = str(table_widget_name.item(row, 0).text())
 
-        new_value = table_widget_name.item(row, column).text()
+        if column == 1:
+            image_path = str(table_widget_name.item(row, 1).text()).removeprefix(
+                "file:///"
+            )
+            new_value = Database.convert_to_blob(Database, image_path)
+        else:
+            new_value = table_widget_name.item(row, column).text()
+
+        record_id = str(table_widget_name.item(row, 0).text())
 
         column_name = columns_name[column - 1]
 

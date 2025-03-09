@@ -166,6 +166,7 @@ class Database:
         SET {column_name} = ?
         WHERE id = ?
         """
+
         try:
             self.connect_db(self, db_name)
             self.cursor.execute(sql, (new_value, record_id))
@@ -173,6 +174,29 @@ class Database:
             self.close_db(self)
         except sqlite3.OperationalError as e:
             print("Failed with error:", e)
+
+    def update_all_values(self, db_name, db_table_name, table_widget_name, column_name, new_values):
+        sql = f"""
+        UPDATE {db_table_name} 
+        SET ? = ?
+        WHERE id = ?
+        """
+
+        selected_row = table_widget_name.currenctRow()
+        if selected_row == -1:
+            return # Row is not selected
+        else:
+            record_id = str(table_widget_name.item(selected_row, 0).text())
+            print(record_id)
+            try:
+                self.connect_db(self, db_name)
+                for column in column_name:
+                    for new_values in new_values:
+                        self.cursor.execute(sql, column, new_value, record_id)
+                        self.conn.commit()
+                self.conn.close(self)
+            except sqlite3.OperationalError as e:
+                print("Filed to open database:", e)
 
     def remove_from_db(self, db_name, db_table_name, table_widget_name, header):
         sql_remove = f"""

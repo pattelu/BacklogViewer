@@ -51,6 +51,7 @@ class AddBook(QDialog, Ui_AddBook):
             Database.add_to_database(Database, "backlog.db", "sql_book", data)
             self.close()
         else:
+            self.button_add.setChecked(False)
             dlg = QMessageBox(self)
             dlg.setWindowTitle("Fields required!")
             dlg.setText("Title and Author is a mandatory field!")

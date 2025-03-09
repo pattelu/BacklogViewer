@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from main_window import MainWindow
+#from main_window import MainWindow
 from widgets.backlog_widget import Backlog
 
 if __name__ == "__main__":

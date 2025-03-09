@@ -51,6 +51,7 @@ class AddFilm(QDialog, Ui_AddFilm):
             Database.add_to_database(Database, "backlog.db", "sql_film", data)
             self.close()
         else:
+            self.button_add.setChecked(False)
             dlg = QMessageBox(self)
             dlg.setWindowTitle("Fields required!")
             dlg.setText("Title is a mandatory field!")
